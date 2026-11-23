@@ -1,0 +1,184 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        a{
+            margin: 25px;
+        }
+        a:link{
+            color:blue;
+        }
+        a:visited{
+            color: green;
+        }
+        
+        a:hover{
+            color: goldenrod;
+        }
+        a:active{
+            color: red;
+        }
+        a:target{
+            color: rgb(101, 46, 7);
+        }
+        
+    </style>
+</head>
+<body>
+    <a href="www.amazon.com">Amazon</a>
+    <a href="www.google.com">Google</a>
+    <a href="www.flipkart.com">Flipkart</a>
+</body>
+</html>  -->
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        img{
+            width: 40px;
+            height: 40px;
+            transition: 5s;
+        }
+        img:active{
+            height: 400px;
+            width: 400px;
+            transition: 5s;
+        }
+        img:hover{
+            height: 400px;
+            width: 400px;
+            transition: 5s;
+        }
+    </style>
+</head>
+<body>
+    <img src="Public/photo/Active.png" alt="">
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        a{
+            margin: 25px;
+        }
+        p:target{
+            color: chartreuse;
+            background-color: blueviolet;
+            font-size: larger;
+            font-family: 'Times New Roman', Times, serif;
+        }
+    </style>
+</head>
+<body>
+    <h2>CSS Selector</h2>
+    <a href="#java">java</a>
+    <a href="#python">Python</a>
+    <a href="#javascript">Javascript</a>
+    <hr>
+    <hr>
+    <p id="java">Java tought by zabi sir </p>
+    <p id="python">Python Thought by krishnapal sir </p>
+    <p id="javascript"> Js thought by Nitin sir </p>
+</body>
+</html>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form action="">
+        <dl>
+            <dt>username</dt>
+            <dd>
+                <input type="text" name="txtusername" id="" autofocus  maxlength="9">
+            </dd>
+            <dt>Email</dt>
+            <dd>
+                <input type="email" name="" id="">
+            </dd>
+            <dt>country</dt>
+            <dd>
+                <input type="text" name="txtUserCountry" id="" value="IND disabled" disabled>
+            </dd>
+            <dt>country</dt>
+            <dd>
+                <input type="text" name="txtUserCountry" id="" value="IND readonly" readonly>
+            </dd>
+            <dt>Gender</dt>
+            <dd>
+                <input type="radio" name="Gender" id="Gender">male
+                <input type="radio" name="Gender" id="Gender">female
+                <input type="radio" name="Gender" id="Gender">other
+            </dd>
+        </dl>
+        <button type="submit">submit</button>
+    </form>
+</body>
+</html>
+<!--  -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        
+        ol {
+            display: flex;
+            flex-direction: row;
+            list-style-type: none;
+        }
+
+        li::after {
+            content: ">>";
+        }
+
+        li:last-child::after {
+            content: " ";
+        }
+
+    </style>
+</head>
+<body>
+    <ol type="1">
+        <li>HTML</li>
+        <li>CSS</li>
+        <li>Javascript</li>
+        <li>React</li>
+        <li>Node.js</li>
+        <li>Express.js</li>
+        <li>Java</li>
+        <li>Hibernate</li>
+        <li>Spring</li>
+        <li>SpringBoot</li>
+    </ol>
+</body>
+</html>
+
+

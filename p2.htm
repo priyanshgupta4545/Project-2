@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoTrack — Enterprise Sustainability & Environmental Intelligence Platform</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌱</text></svg>">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            forest: {
+              50: '#F0FDF4',
+              100: '#DCFCE7',
+              200: '#BBF7D0',
+              300: '#86EFAC',
+              400: '#4ADE80',
+              500: '#22C55E',
+              600: '#16A34A',
+              700: '#15803D',
+              800: '#166534',
+              900: '#064E3B',
+              950: '#022C22',
+            },
+            emerald: {
+              500: '#10B981',
+              600: '#059669',
+              700: '#047857'
+            },
+            slate: {
+              850: '#151F32',
+              900: '#0F172A',
+              950: '#080E1A'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+
+    /* Mesh Gradients */
+    .bg-mesh {
+      background-color: #F8FAFC;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(6, 95, 70, 0.06) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(14, 165, 233, 0.05) 0px, transparent 50%);
+    }
+
+    /* Glass Effect */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+    }
+
+    .glass-card:hover {
+      border-color: rgba(16, 185, 129, 0.4);
+      box-shadow: 0 10px 25px -3px rgba(16, 185, 129, 0.08);
+    }
+
+    /* Modal Animation */
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.96) translateY(8px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .modal-animate {
+      animation: modalIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Circular Progress */
+    .progress-ring-circle {
+      transition: stroke-dashoffset 0.8s ease-in-out;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+    }
+  </style>
+</head>
+<body class="bg-mesh min-h-screen text-slate-900 font-sans antialiased flex flex-col selection:bg-emerald-100 selection:text-emerald-900">
+
+  <!-- ============================================================ -->
+  <!-- TOP NAVIGATION HEADER                                         -->
+  <!-- ============================================================ -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Brand & Status -->
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-forest-900 via-emerald-600 to-teal-400 flex items-center justify-center text-white shadow-md shadow-emerald-500/20">
+          <span class="text-xl">🌱</span>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="font-extrabold text-lg tracking-tight text-slate-900">EcoTrack</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-200">Enterprise v2.4</span>
+          </div>
+          <p class="text-xs text-slate-500 hidden sm:block">Intelligent Sustainability & Carbon Management System</p>
+        </div>
+      </div>
+
+      <!-- Live KPI Pills & Quick Action -->
+      <div class="flex items-center space-x-3">
+        <!-- Live EcoScore Counter -->
+        <div class="hidden md:flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-slate-100/80 border border-slate-200 text-xs font-semibold">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span class="text-slate-600">EcoScore:</span>
+          <span id="navEcoScore" class="font-bold text-forest-900 font-mono text-sm">94</span>
+          <span class="text-slate-400">/100</span>
+        </div>
+
+        <!-- Streak Pill -->
+        <div class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-amber-50 border border-amber-200 text-xs font-bold text-amber-800">
+          <span>🔥</span>
+          <span id="navStreak">7</span>
+          <span class="hidden sm:inline">Day Streak</span>
+        </div>
+
+        <!-- Quick Log Action Button -->
+        <button onclick="openModal()" class="flex items-center space-x-1.5 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs tracking-wide shadow-sm shadow-emerald-600/30 transition-all hover:shadow-md hover:-translate-y-0.5 active:translate-y-0">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+          <span>Log Activity</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs Bar -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-100 flex space-x-1 overflow-x-auto py-1 scrollbar-none">
+      <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="nav-tab active flex items-center space-x-2 px-3.5 py-2 rounded-md text-xs font-semibold text-emerald-800 bg-emerald-50/80 whitespace-nowrap transition-colors">
+        <span>📊</span><span>Overview Dashboard</span>
+      </button>
+      <button onclick="switchTab('activities')" id="tab-btn-activities" class="nav-tab flex items-center space-x-2 px-3.5 py-2 rounded-md text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 whitespace-nowrap transition-colors">
+        <span>📝</span><span>Activity Tracker</span>
+      </button>
+      <button onclick="switchTab('impact')" id="tab-btn-impact" class="nav-tab flex items-center space-x-2 px-3.5 py-2 rounded-md text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 whitespace-nowrap transition-colors">
+        <span>🧮</span><span>Impact Simulator</span>
+      </button>
+      <button onclick="switchTab('challenges')" id="tab-btn-challenges" class="nav-tab flex items-center space-x-2 px-3.5 py-2 rounded-md text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 whitespace-nowrap transition-colors">
+        <span>🎯</span><span>Eco Challenges</span>
+      </button>
+      <button onclick="switchTab('achievements')" id="tab-btn-achievements" class="nav-tab flex items-center space-x-2 px-3.5 py-2 rounded-md text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 whitespace-nowrap transition-colors">
+        <span>🏆</span><span>Badges & Milestones</span>
+      </button>
+      <button onclick="switchTab('recycling')" id="tab-btn-recycling" class="nav-tab flex items-center space-x-2 px-3.5 py-2 rounded-md text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 whitespace-nowrap transition-colors">
+        <span>♻️</span><span>Recycling Intelligence</span>
+      </button>
+      <button onclick="switchTab('analytics')" id="tab-btn-analytics" class="nav-tab flex items-center space-x-2 px-3.5 py-2 rounded-md text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 whitespace-nowrap transition-colors">
+        <span>📈</span><span>Reports & Analytics</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============================================================ -->
+  <!-- MAIN CONTENT CONTAINER                                       -->
+  <!-- ============================================================ -->
+  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+
+    <!-- ============================================================ -->
+    <!-- TAB 1: OVERVIEW DASHBOARD                                    -->
+    <!-- ============================================================ -->
+    <div id="tab-dashboard" class="tab-pane space-y-6">
+      
+      <!-- Executive Hero Banner -->
+      <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-forest-950 via-forest-900 to-emerald-800 text-white p-6 sm:p-8 shadow-xl shadow-forest-950/10">
+        <div class="relative z-10 max-w-2xl">
+          <div class="inline-flex items-center space-x-2 px-2.5 py-1 rounded-full bg-white/10 text-emerald-200 text-xs font-semibold backdrop-blur-sm mb-3">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span id="heroDateLabel">Wednesday, November 18, 2026</span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2">Measure Impact. Reduce Footprint. Lead Change.</h1>
+          <p class="text-emerald-100/80 text-sm leading-relaxed mb-4">
+            Transform everyday choices into verified metrics. Track greenhouse gases avoided, water conserved, and waste diverted with scientifically grounded life-cycle models.
+          </p>
+          <div class="flex flex-wrap gap-2 text-xs font-medium">
+            <span class="px-3 py-1 rounded-lg bg-emerald-950/40 border border-emerald-500/20 text-emerald-200">ISO 14064 Calibrated</span>
+            <span class="px-3 py-1 rounded-lg bg-emerald-950/40 border border-emerald-500/20 text-emerald-200">EPA WARM Compatible</span>
+            <span class="px-3 py-1 rounded-lg bg-emerald-950/40 border border-emerald-500/20 text-emerald-200">Real-Time Data Persistence</span>
+          </div>
+        </div>
+        <!-- Decorative SVG element -->
+        <div class="absolute right-0 bottom-0 opacity-10 pointer-events-none transform translate-x-8 translate-y-8">
+          <svg class="w-80 h-80 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"></path></svg>
+        </div>
+      </div>
+
+      <!-- Core Executive KPI Matrix (4 Column Grid) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Card 1: Activities -->
+        <div class="glass-card rounded-xl p-5 transition-all">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Total Eco-Actions</span>
+            <div class="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">🌱</div>
+          </div>
+          <div class="flex items-baseline space-x-2">
+            <span id="kpiActivities" class="text-3xl font-extrabold text-slate-900 font-mono">29</span>
+            <span class="text-xs font-semibold text-slate-500">logged</span>
+          </div>
+          <div class="mt-3 flex items-center text-xs font-semibold text-emerald-600">
+            <span>↑ 18.2%</span>
+            <span class="text-slate-400 font-normal ml-1">vs prior period</span>
+          </div>
+        </div>
+
+        <!-- Card 2: CO2e Avoided -->
+        <div class="glass-card rounded-xl p-5 transition-all">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-500">CO2e Emissions Avoided</span>
+            <div class="w-9 h-9 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center text-lg">☁️</div>
+          </div>
+          <div class="flex items-baseline space-x-2">
+            <span id="kpiCO2" class="text-3xl font-extrabold text-slate-900 font-mono">38.4</span>
+            <span class="text-xs font-semibold text-slate-500">kg CO2e</span>
+          </div>
+          <div class="mt-3 flex items-center text-xs font-semibold text-emerald-600">
+            <span>≈ 1.8 Urban tree-years</span>
+          </div>
+        </div>
+
+        <!-- Card 3: Water Saved -->
+        <div class="glass-card rounded-xl p-5 transition-all">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Potable Water Conserved</span>
+            <div class="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-lg">💧</div>
+          </div>
+          <div class="flex items-baseline space-x-2">
+            <span id="kpiWater" class="text-3xl font-extrabold text-slate-900 font-mono">8,950</span>
+            <span class="text-xs font-semibold text-slate-500">Liters</span>
+          </div>
+          <div class="mt-3 flex items-center text-xs font-semibold text-sky-600">
+            <span>≈ 60 Bathtubs preserved</span>
+          </div>
+        </div>
+
+        <!-- Card 4: Waste Diverted -->
+        <div class="glass-card rounded-xl p-5 transition-all">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Landfill Waste Diverted</span>
+            <div class="w-9 h-9 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-lg">♻️</div>
+          </div>
+          <div class="flex items-baseline space-x-2">
+            <span id="kpiWaste" class="text-3xl font-extrabold text-slate-900 font-mono">6.7</span>
+            <span class="text-xs font-semibold text-slate-500">kg diverted</span>
+          </div>
+          <div class="mt-3 flex items-center text-xs font-semibold text-amber-600">
+            <span>≈ 270 Plastic bottles</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Equivalencies Ribbon -->
+      <div class="bg-white border border-slate-200/80 rounded-xl p-4 shadow-sm grid grid-cols-2 sm:grid-cols-4 gap-4 text-center divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
+        <div class="pt-2 sm:pt-0">
+          <div class="text-2xl mb-1">🌲</div>
+          <div id="eqTrees" class="text-lg font-extrabold text-slate-900 font-mono">1.76</div>
+          <div class="text-xs text-slate-500 font-medium">Tree-Years of Absorption</div>
+        </div>
+        <div class="pt-2 sm:pt-0">
+          <div class="text-2xl mb-1">🚗</div>
+          <div id="eqCars" class="text-lg font-extrabold text-slate-900 font-mono">225.2 km</div>
+          <div class="text-xs text-slate-500 font-medium">Passenger Car Travel Cancelled</div>
+        </div>
+        <div class="pt-2 sm:pt-0">
+          <div class="text-2xl mb-1">⚡</div>
+          <div id="eqEnergy" class="text-lg font-extrabold text-slate-900 font-mono">2,220</div>
+          <div class="text-xs text-slate-500 font-medium">Smartphone Charges Offset</div>
+        </div>
+        <div class="pt-2 sm:pt-0">
+          <div class="text-2xl mb-1">🥤</div>
+          <div id="eqBottles" class="text-lg font-extrabold text-slate-900 font-mono">268</div>
+          <div class="text-xs text-slate-500 font-medium">Single-Use Bottles Avoided</div>
+        </div>
+      </div>
+
+      <!-- Main Dashboard Grid (2 Columns: 7 / 5 split) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left: EcoScore & Weekly Trends (7 cols) -->
+        <div class="lg:col-span-7 space-y-6">
+          
+          <!-- EcoScore Radial Mastery Showcase -->
+          <div class="glass-card rounded-xl p-6 bg-gradient-to-br from-white via-white to-forest-50/50">
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="text-xs font-bold uppercase tracking-wider text-emerald-700">Holistic Sustainability Index</span>
+                <h2 class="text-xl font-extrabold text-slate-900 mt-1 flex items-center gap-2">
+                  <span>Eco Champion</span> <span class="text-xl">🏆</span>
+                </h2>
+                <p class="text-xs text-slate-500 mt-1 max-w-sm">
+                  Evaluated using consistency, carbon reduction, habit diversity, and challenge completions.
+                </p>
+              </div>
+
+              <!-- Animated Radial Progress -->
+              <div class="relative w-28 h-28 flex items-center justify-center flex-shrink-0">
+                <svg class="w-full h-full" viewBox="0 0 100 100">
+                  <circle class="text-slate-100" stroke-width="10" stroke="currentColor" fill="transparent" r="38" cx="50" cy="50" />
+                  <circle class="progress-ring-circle text-emerald-500" stroke-width="10" stroke-dasharray="238.7" stroke-dashoffset="14.3" stroke-linecap="round" stroke="currentColor" fill="transparent" r="38" cx="50" cy="50" />
+                </svg>
+                <div class="absolute flex flex-col items-center">
+                  <span id="scoreCenter" class="text-2xl font-black text-forest-900 font-mono leading-none">94</span>
+                  <span class="text-[9px] uppercase tracking-wider text-slate-400 font-bold mt-0.5">Top 3%</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dimension Breakdown Bars -->
+            <div class="mt-6 pt-5 border-t border-slate-100 grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+              <div class="bg-slate-50/80 p-2.5 rounded-lg border border-slate-100">
+                <span class="text-[10px] uppercase font-bold text-slate-500 block">Consistency</span>
+                <span class="text-sm font-bold text-slate-800 font-mono">28 / 30</span>
+              </div>
+              <div class="bg-slate-50/80 p-2.5 rounded-lg border border-slate-100">
+                <span class="text-[10px] uppercase font-bold text-slate-500 block">Impact</span>
+                <span class="text-sm font-bold text-slate-800 font-mono">34 / 35</span>
+              </div>
+              <div class="bg-slate-50/80 p-2.5 rounded-lg border border-slate-100">
+                <span class="text-[10px] uppercase font-bold text-slate-500 block">Diversity</span>
+                <span class="text-sm font-bold text-slate-800 font-mono">18 / 20</span>
+              </div>
+              <div class="bg-slate-50/80 p-2.5 rounded-lg border border-slate-100">
+                <span class="text-[10px] uppercase font-bold text-slate-500 block">Challenges</span>
+                <span class="text-sm font-bold text-slate-800 font-mono">14 / 15</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Weekly Activity Chart -->
+          <div class="glass-card rounded-xl p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h3 class="font-extrabold text-base text-slate-900">Weekly Carbon Avoidance Velocity</h3>
+                <p class="text-xs text-slate-500">Daily environmental savings (kg CO2e) over the current week</p>
+              </div>
+              <span class="px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100">7-Day Rolling</span>
+            </div>
+            <div class="h-64 relative">
+              <canvas id="overviewChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Recent Activity Stream -->
+          <div class="glass-card rounded-xl p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h3 class="font-extrabold text-base text-slate-900">Verified Activity Ledger</h3>
+                <p class="text-xs text-slate-500">Latest recorded environmental interventions</p>
+              </div>
+              <button onclick="switchTab('activities')" class="text-xs font-bold text-emerald-600 hover:text-emerald-700">View All →</button>
+            </div>
+            <div id="recentActivityList" class="divide-y divide-slate-100">
+              <!-- Dynamically Populated -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Category Donut, Benchmarks & Tips (5 cols) -->
+        <div class="lg:col-span-5 space-y-6">
+
+          <!-- Category Doughnut Distribution -->
+          <div class="glass-card rounded-xl p-6">
+            <h3 class="font-extrabold text-base text-slate-900 mb-1">Impact Sector Distribution</h3>
+            <p class="text-xs text-slate-500 mb-4">Share of sustainability actions across 5 sectors</p>
+            <div class="h-56 relative flex items-center justify-center">
+              <canvas id="overviewDonut"></canvas>
+            </div>
+          </div>
+
+          <!-- Active Sprints Snapshot -->
+          <div class="glass-card rounded-xl p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-extrabold text-base text-slate-900">Active Challenge Sprints</h3>
+              <button onclick="switchTab('challenges')" class="text-xs font-bold text-emerald-600 hover:text-emerald-700">Browse Catalog</button>
+            </div>
+            <div class="space-y-3">
+              <div class="p-3.5 rounded-lg bg-slate-50 border border-slate-200/80">
+                <div class="flex justify-between text-xs font-bold text-slate-900 mb-1">
+                  <span>Plastic-Free Habit Builder</span>
+                  <span class="text-emerald-600">73%</span>
+                </div>
+                <div class="text-[11px] text-slate-500 mb-2">11 / 15 single-use items avoided (2 days left)</div>
+                <div class="w-full bg-slate-200 rounded-full h-2">
+                  <div class="bg-emerald-500 h-2 rounded-full transition-all" style="width: 73%"></div>
+                </div>
+              </div>
+
+              <div class="p-3.5 rounded-lg bg-slate-50 border border-slate-200/80">
+                <div class="flex justify-between text-xs font-bold text-slate-900 mb-1">
+                  <span>Pedal & Stride: Green Commute</span>
+                  <span class="text-emerald-600">72%</span>
+                </div>
+                <div class="text-[11px] text-slate-500 mb-2">18.0 / 25.0 km green transit (8 days left)</div>
+                <div class="w-full bg-slate-200 rounded-full h-2">
+                  <div class="bg-emerald-500 h-2 rounded-full transition-all" style="width: 72%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Simulated Peer Leaderboard -->
+          <div class="glass-card rounded-xl p-6">
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <h3 class="font-extrabold text-base text-slate-900">EcoCampus Benchmark</h3>
+                <p class="text-xs text-slate-500">Simulated cohort benchmark for performance tracking</p>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600">Simulated</span>
+            </div>
+            <div class="space-y-2 mt-2">
+              <div class="flex items-center justify-between p-2.5 rounded-lg bg-emerald-50/80 border border-emerald-200">
+                <div class="flex items-center space-x-2.5">
+                  <span class="font-extrabold text-xs text-emerald-800">#1</span>
+                  <span class="text-base">🌟</span>
+                  <div>
+                    <div class="text-xs font-bold text-emerald-950">You (Eco Warrior) <span class="bg-emerald-600 text-white text-[9px] px-1.5 py-0.2 rounded font-extrabold">YOU</span></div>
+                    <div class="text-[10px] text-emerald-700">29 actions • 7-day streak</div>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="text-xs font-extrabold text-emerald-900 font-mono">94 pts</div>
+                  <div class="text-[10px] text-emerald-700">38.4 kg CO2</div>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 border border-slate-100">
+                <div class="flex items-center space-x-2.5">
+                  <span class="font-extrabold text-xs text-slate-400">#2</span>
+                  <span class="text-base">🌱</span>
+                  <div>
+                    <div class="text-xs font-bold text-slate-800">Maya (Eco Ambassador)</div>
+                    <div class="text-[10px] text-slate-500">48 actions • 12-day streak</div>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="text-xs font-extrabold text-slate-800 font-mono">92 pts</div>
+                  <div class="text-[10px] text-slate-500">42.5 kg CO2</div>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 border border-slate-100">
+                <div class="flex items-center space-x-2.5">
+                  <span class="font-extrabold text-xs text-slate-400">#3</span>
+                  <span class="text-base">♻️</span>
+                  <div>
+                    <div class="text-xs font-bold text-slate-800">Alex (Zero Waste)</div>
+                    <div class="text-[10px] text-slate-500">39 actions • 9-day streak</div>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="text-xs font-extrabold text-slate-800 font-mono">86 pts</div>
+                  <div class="text-[10px] text-slate-500">36.2 kg CO2</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB 2: ACTIVITY TRACKER (CRUD & FILTERS)                     -->
+    <!-- ============================================================ -->
+    <div id="tab-activities" class="tab-pane hidden space-y-6">
+      
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Eco Activity Ledger & Record Management</h2>
+          <p class="text-xs sm:text-sm text-slate-500">Log verified habits, filter entries across categories, and export audit-ready CSV reports.</p>
+        </div>
+        <div class="flex space-x-2">
+          <button onclick="openModal()" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs tracking-wide shadow-sm flex items-center space-x-1.5">
+            <span>➕</span><span>New Activity</span>
+          </button>
+          <button onclick="exportCSV()" class="px-3.5 py-2 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold text-xs flex items-center space-x-1.5 shadow-sm">
+            <span>📥</span><span>Export CSV</span>
+          </button>
+          <button onclick="resetData()" class="px-3.5 py-2 rounded-lg bg-white border border-slate-200 hover:bg-rose-50 hover:text-rose-600 text-slate-600 font-semibold text-xs flex items-center space-x-1.5 shadow-sm">
+            <span>🔄</span><span>Reset Demo</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Filter & Search Controls -->
+      <div class="glass-card rounded-xl p-4 flex flex-col md:flex-row gap-3 items-center justify-between">
+        <div class="relative w-full md:w-96">
+          <input type="text" id="ledgerSearchInput" oninput="filterLedger()" placeholder="Search activities, keywords, notes..." class="w-full pl-9 pr-4 py-2 rounded-lg border border-slate-200 text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white">
+          <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        </div>
+
+        <div class="flex items-center space-x-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+          <button onclick="setCategoryFilter('All')" class="cat-pill active px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 text-white whitespace-nowrap">All Sectors</button>
+          <button onclick="setCategoryFilter('Transportation')" class="cat-pill px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 whitespace-nowrap">🚲 Transport</button>
+          <button onclick="setCategoryFilter('Waste & Recycling')" class="cat-pill px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 whitespace-nowrap">♻️ Waste</button>
+          <button onclick="setCategoryFilter('Water Conservation')" class="cat-pill px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 whitespace-nowrap">💧 Water</button>
+          <button onclick="setCategoryFilter('Energy Conservation')" class="cat-pill px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 whitespace-nowrap">⚡ Energy</button>
+          <button onclick="setCategoryFilter('Sustainable Food')" class="cat-pill px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 whitespace-nowrap">🥗 Food</button>
+        </div>
+      </div>
+
+      <!-- Ledger Table -->
+      <div class="glass-card rounded-xl overflow-hidden border border-slate-200">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
+              <tr>
+                <th class="py-3.5 px-4">Date</th>
+                <th class="py-3.5 px-4">Action & Sector</th>
+                <th class="py-3.5 px-4">Quantity</th>
+                <th class="py-3.5 px-4 text-right">CO2e Saved</th>
+                <th class="py-3.5 px-4 text-right">Water Saved</th>
+                <th class="py-3.5 px-4 text-right">Energy</th>
+                <th class="py-3.5 px-4 text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody id="ledgerTableBody" class="divide-y divide-slate-100">
+              <!-- Dynamically Populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB 3: IMPACT SIMULATOR (WHAT-IF MODELER)                    -->
+    <!-- ============================================================ -->
+    <div id="tab-impact" class="tab-pane hidden space-y-6">
+      <div>
+        <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Interactive Environmental Impact Simulator</h2>
+        <p class="text-xs sm:text-sm text-slate-500">Model personal lifestyle shifts into projected annual greenhouse gas and resource savings.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Interactive Controls (7 cols) -->
+        <div class="lg:col-span-7 glass-card rounded-xl p-6 space-y-6">
+          <h3 class="font-extrabold text-base text-slate-900 border-b border-slate-100 pb-3">Lifestyle Adjustment Sliders</h3>
+
+          <!-- Slider 1 -->
+          <div>
+            <div class="flex justify-between text-xs font-bold text-slate-700 mb-1">
+              <span>🚲 Green Commute (Walk/Cycle vs Car)</span>
+              <span id="simKmVal" class="text-emerald-600 font-mono text-sm">20 km / week</span>
+            </div>
+            <input type="range" id="simKm" min="0" max="100" value="20" step="5" oninput="recalcSimulator()" class="w-full accent-emerald-600">
+            <div class="text-[11px] text-slate-400">Cancels petrol passenger car combustion (~0.17 kg CO2e / km)</div>
+          </div>
+
+          <!-- Slider 2 -->
+          <div>
+            <div class="flex justify-between text-xs font-bold text-slate-700 mb-1">
+              <span>🚿 Shower Time Shortened</span>
+              <span id="simShowerVal" class="text-emerald-600 font-mono text-sm">4 min / day</span>
+            </div>
+            <input type="range" id="simShower" min="0" max="15" value="4" step="1" oninput="recalcSimulator()" class="w-full accent-emerald-600">
+            <div class="text-[11px] text-slate-400">Saves ~9 Liters of potable water per minute & reduces water-heating energy</div>
+          </div>
+
+          <!-- Slider 3 -->
+          <div>
+            <div class="flex justify-between text-xs font-bold text-slate-700 mb-1">
+              <span>🥗 Plant-Forward Meal Swaps</span>
+              <span id="simMealVal" class="text-emerald-600 font-mono text-sm">4 meals / week</span>
+            </div>
+            <input type="range" id="simMeal" min="0" max="21" value="4" step="1" oninput="recalcSimulator()" class="w-full accent-emerald-600">
+            <div class="text-[11px] text-slate-400">Substitutes high-emission animal protein with legumes/grains (~1.8 kg CO2 & 1,200 L water)</div>
+          </div>
+
+          <!-- Slider 4 -->
+          <div>
+            <div class="flex justify-between text-xs font-bold text-slate-700 mb-1">
+              <span>🥤 Single-Use Bottles / Packaging Avoided</span>
+              <span id="simBottleVal" class="text-emerald-600 font-mono text-sm">10 items / week</span>
+            </div>
+            <input type="range" id="simBottle" min="0" max="40" value="10" step="1" oninput="recalcSimulator()" class="w-full accent-emerald-600">
+            <div class="text-[11px] text-slate-400">Eliminates virgin PET lifecycle emissions & microplastic leakage</div>
+          </div>
+        </div>
+
+        <!-- Projected Projections (5 cols) -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="rounded-xl p-6 bg-gradient-to-br from-forest-950 to-emerald-900 text-white shadow-lg space-y-4">
+            <span class="text-xs uppercase font-extrabold tracking-wider text-emerald-300">Projected Annual Environmental Savings</span>
+            
+            <div class="space-y-3 pt-2">
+              <div class="flex items-center justify-between border-b border-white/10 pb-2">
+                <span class="text-xs text-emerald-100">Annual CO2 Avoided</span>
+                <span id="simAnnualCO2" class="text-xl font-black font-mono text-emerald-300">598 kg</span>
+              </div>
+              <div class="flex items-center justify-between border-b border-white/10 pb-2">
+                <span class="text-xs text-emerald-100">Annual Water Preserved</span>
+                <span id="simAnnualWater" class="text-xl font-black font-mono text-sky-300">262,800 L</span>
+              </div>
+              <div class="flex items-center justify-between border-b border-white/10 pb-2">
+                <span class="text-xs text-emerald-100">Annual Plastic Diverted</span>
+                <span id="simAnnualWaste" class="text-xl font-black font-mono text-amber-300">13.0 kg</span>
+              </div>
+              <div class="flex items-center justify-between pb-1">
+                <span class="text-xs text-emerald-100">Power Conserved</span>
+                <span id="simAnnualPower" class="text-xl font-black font-mono text-teal-300">245 kWh</span>
+              </div>
+            </div>
+
+            <div class="bg-white/10 rounded-lg p-3 text-xs leading-relaxed text-emerald-100/90 mt-4">
+              💡 <b>Equivalence:</b> This scenario prevents the greenhouse emissions of driving an average sedan for <b>3,517 km</b> and preserves <b>1,752 bathtubs</b> of drinking water each year.
+            </div>
+          </div>
+
+          <!-- Methodology Box -->
+          <div class="glass-card rounded-xl p-5 text-xs text-slate-600 space-y-2">
+            <h4 class="font-extrabold text-slate-900">Transparent Assumptions:</h4>
+            <p>• Vehicle factor: 0.170 kg CO2e/km (US EPA / UK DEFRA passenger car model).</p>
+            <p>• Water factor: 9 L/min standard shower flow; water pumping & heating = 0.003 kg CO2e/L.</p>
+            <p>• Dietary factor: 1.8 kg CO2e avoided & 1,200 L water conserved per plant meal swap (Poore & Nemecek, Science).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB 4: ECO CHALLENGES                                        -->
+    <!-- ============================================================ -->
+    <div id="tab-challenges" class="tab-pane hidden space-y-6">
+      <div>
+        <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Structured Sustainability Sprints</h2>
+        <p class="text-xs sm:text-sm text-slate-500">Join focused habit challenges, record milestone progress, and earn points toward your EcoScore tier.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="challengesGrid">
+        <!-- Dynamically Populated -->
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB 5: ACHIEVEMENTS & BADGES                                 -->
+    <!-- ============================================================ -->
+    <div id="tab-achievements" class="tab-pane hidden space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Achievements & Trophy Showcase</h2>
+          <p class="text-xs sm:text-sm text-slate-500">Recognizing real reductions in emissions and resource consumption.</p>
+        </div>
+        <div class="px-3.5 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-800">
+          <span id="badgeUnlockedCount">6</span> / 9 Badges Unlocked
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4" id="badgesGrid">
+        <!-- Dynamically Populated -->
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB 6: RECYCLING INTELLIGENCE                                -->
+    <!-- ============================================================ -->
+    <div id="tab-recycling" class="tab-pane hidden space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Recycling Decision Engine & Directory</h2>
+          <p class="text-xs sm:text-sm text-slate-500">Prevent recycling contamination and "wishcycling" with clear preparation rules and green alternatives.</p>
+        </div>
+        <div class="w-full sm:w-80">
+          <input type="text" id="recycleSearch" oninput="filterRecycling()" placeholder="Search material (e.g. pizza, bottle, styrofoam)..." class="w-full px-3.5 py-2 rounded-lg border border-slate-200 text-xs focus:ring-2 focus:ring-emerald-500 bg-white">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="recyclingCardGrid">
+        <!-- Dynamically Populated -->
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB 7: REPORTS & ANALYTICS                                   -->
+    <!-- ============================================================ -->
+    <div id="tab-analytics" class="tab-pane hidden space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Environmental Intelligence & Audit Reports</h2>
+          <p class="text-xs sm:text-sm text-slate-500">Deep time-series analytics, sector radar balances, and exportable data digests.</p>
+        </div>
+        <button onclick="exportCSV()" class="px-3.5 py-2 rounded-lg bg-emerald-600 text-white font-semibold text-xs flex items-center space-x-1.5 shadow-sm">
+          <span>📄</span><span>Download Full Ledger (CSV)</span>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Cumulative Chart -->
+        <div class="glass-card rounded-xl p-6">
+          <h3 class="font-extrabold text-base text-slate-900 mb-1">Cumulative Carbon Growth Curve</h3>
+          <p class="text-xs text-slate-500 mb-4">Total kg CO2e avoided since inception</p>
+          <div class="h-64 relative">
+            <canvas id="cumulativeChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Radar Balance -->
+        <div class="glass-card rounded-xl p-6">
+          <h3 class="font-extrabold text-base text-slate-900 mb-1">Habit Balance Radar</h3>
+          <p class="text-xs text-slate-500 mb-4">Normalized adherence across sustainability dimensions</p>
+          <div class="h-64 relative flex items-center justify-center">
+            <canvas id="radarChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ============================================================ -->
+  <!-- MODAL: QUICK LOG ACTIVITY                                    -->
+  <!-- ============================================================ -->
+  <div id="logModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm hidden p-4">
+    <div class="modal-animate bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-lg p-6 overflow-hidden">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div class="flex items-center space-x-2">
+          <span class="text-xl">🌱</span>
+          <h3 class="text-base font-extrabold text-slate-900">Record Environmental Action</h3>
+        </div>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 text-lg font-bold">✕</button>
+      </div>
+
+      <form id="activityForm" onsubmit="handleLogActivity(event)" class="space-y-4 pt-4 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Select Activity Preset</label>
+          <select id="modalActivitySelect" onchange="updateModalPreview()" class="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-500 bg-white font-medium">
+            <option value="walk_cycle" data-cat="Transportation" data-unit="km" data-co2="0.170" data-water="0" data-waste="0" data-energy="0">🚲 Walked / Cycled instead of Driving (km)</option>
+            <option value="public_transit" data-cat="Transportation" data-unit="km" data-co2="0.100" data-water="0" data-waste="0" data-energy="0">🚆 Took Bus, Metro or Train (km)</option>
+            <option value="reusable_bottle" data-cat="Waste & Recycling" data-unit="refills" data-co2="0.082" data-water="3" data-waste="0.025" data-energy="0.12">🍶 Used Reusable Water Bottle (refills)</option>
+            <option value="recycled_paper_can" data-cat="Waste & Recycling" data-unit="kg" data-co2="1.400" data-water="20" data-waste="1.0" data-energy="1.8">📦 Recycled Plastic, Paper or Cans (kg)</option>
+            <option value="short_shower" data-cat="Water Conservation" data-unit="showers" data-co2="0.150" data-water="45" data-waste="0" data-energy="0.35">🚿 Short 5-Minute Shower (showers)</option>
+            <option value="tap_off_brushing" data-cat="Water Conservation" data-unit="times" data-co2="0.015" data-water="12" data-waste="0" data-energy="0.02">🚰 Turned Tap Off While Brushing (times)</option>
+            <option value="plant_meal" data-cat="Sustainable Food" data-unit="meals" data-co2="1.800" data-water="1200" data-waste="0.1" data-energy="0.8">🥗 Plant-Based / Vegetarian Meal (meals)</option>
+            <option value="zero_food_waste" data-cat="Sustainable Food" data-unit="meals" data-co2="0.850" data-water="300" data-waste="0.35" data-energy="0.2">🍲 Zero Plate Waste / Reheated Leftovers (meals)</option>
+            <option value="led_lights" data-cat="Energy Conservation" data-unit="hours" data-co2="0.040" data-water="0" data-waste="0" data-energy="0.10">💡 Switched Off Idle Electronics (hours)</option>
+            <option value="air_dry" data-cat="Energy Conservation" data-unit="loads" data-co2="1.200" data-water="0" data-waste="0" data-energy="3.0">👕 Air-Dried Laundry (No Dryer) (loads)</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Quantity (<span id="modalUnitLabel">km</span>)</label>
+            <input type="number" id="modalQty" min="0.1" step="0.5" value="5" oninput="updateModalPreview()" class="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-500 font-mono">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Date</label>
+            <input type="date" id="modalDate" class="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Reflections / Notes (Optional)</label>
+          <input type="text" id="modalNotes" placeholder="e.g. Cycled 5 km along greenway" class="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-500">
+        </div>
+
+        <!-- Calculated Live Preview -->
+        <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-950 flex justify-between items-center text-xs">
+          <div>
+            <span class="font-bold">Calculated Impact:</span>
+            <div class="text-[11px] text-emerald-800">
+              -<span id="previewCO2">0.85</span> kg CO2 • <span id="previewWater">0</span> L Water • <span id="previewPower">0.0</span> kWh Power
+            </div>
+          </div>
+          <span class="text-lg">🌿</span>
+        </div>
+
+        <div class="flex space-x-2 pt-2">
+          <button type="button" onclick="closeModal()" class="w-1/2 py-2 rounded-lg border border-slate-200 font-semibold text-slate-600 hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="w-1/2 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-md shadow-emerald-600/30">Save Activity</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+
+  <!-- ============================================================ -->
+  <!-- JAVASCRIPT STATE ENGINE & INTERACTIVITY                      -->
+  <!-- ============================================================ -->
+  <script>
+    // -------------------------------------------------------------
+    // Core Initial Data State (29 Rich Pre-Seeded Records)
+    // -------------------------------------------------------------
+    const DEFAULT_ACTIVITIES = [
+      { id: 29, date: "2026-11-18", name: "Walked or Cycled instead of Driving", category: "Transportation", icon: "🚲", qty: 5.0, unit: "km", co2: 0.85, water: 0, waste: 0, energy: 0, notes: "Walked to market" },
+      { id: 28, date: "2026-11-18", name: "Used Reusable Water Bottle", category: "Waste & Recycling", icon: "🍶", qty: 3.0, unit: "refills", co2: 0.25, water: 9, waste: 0.075, energy: 0.36, notes: "Carried flask" },
+      { id: 27, date: "2026-11-17", name: "Used Rainwater for Garden Plants", category: "Water Conservation", icon: "🌧️", qty: 18.0, unit: "liters", co2: 0.05, water: 18, waste: 0, energy: 0.09, notes: "Kitchen greywater" },
+      { id: 26, date: "2026-11-17", name: "Switched Off Idle Electronics", category: "Energy Conservation", icon: "💡", qty: 5.0, unit: "hours", co2: 0.20, water: 0, waste: 0, energy: 0.50, notes: "Office shutdown" },
+      { id: 25, date: "2026-11-16", name: "Chose Plant-Based Meal", category: "Sustainable Food", icon: "🥗", qty: 3.0, unit: "meals", co2: 5.40, water: 3600, waste: 0.3, energy: 2.4, notes: "Plant protein day" },
+      { id: 24, date: "2026-11-15", name: "Short 5-Minute Shower", category: "Water Conservation", icon: "🚿", qty: 1.0, unit: "showers", co2: 0.15, water: 45, waste: 0, energy: 0.35, notes: "Morning shower" },
+      { id: 23, date: "2026-11-15", name: "Recycled Plastic, Paper or Cans", category: "Waste & Recycling", icon: "📦", qty: 1.8, unit: "kg", co2: 2.52, water: 36, waste: 1.80, energy: 3.24, notes: "Sorting center" },
+      { id: 22, date: "2026-11-14", name: "Air-Dried Laundry (No Dryer)", category: "Energy Conservation", icon: "👕", qty: 1.0, unit: "loads", co2: 1.20, water: 0, waste: 0, energy: 3.00, notes: "Balcony rack" },
+      { id: 21, date: "2026-11-13", name: "Took Bus, Metro or Train", category: "Transportation", icon: "🚆", qty: 18.0, unit: "km", co2: 1.80, water: 0, waste: 0, energy: 0, notes: "Metro commute" },
+      { id: 20, date: "2026-11-12", name: "Zero Plate Waste / Reheated Leftovers", category: "Sustainable Food", icon: "🍲", qty: 1.0, unit: "meals", co2: 0.85, water: 300, waste: 0.35, energy: 0.20, notes: "Lunch leftovers" }
+    ];
+
+    const CHALLENGES_DATA = [
+      { id: 'plastic_free', title: 'Plastic-Free Habit Builder', category: 'Waste & Recycling', icon: '🥤', cur: 11, tgt: 15, unit: 'items avoided', days: 2, points: 100, diff: 'Easy' },
+      { id: 'water_sprint', title: 'H2O Conservation Sprint', category: 'Water Conservation', icon: '💧', cur: 320, tgt: 300, unit: 'Liters saved', days: 0, points: 120, diff: 'Medium', completed: true },
+      { id: 'green_commute', title: 'Pedal & Stride: Green Commute', category: 'Transportation', icon: '🚲', cur: 18, tgt: 25, unit: 'km travelled', days: 8, points: 150, diff: 'Medium' },
+      { id: 'power_down', title: 'Grid Saver: Power Down', category: 'Energy Conservation', icon: '⚡', cur: 8.5, tgt: 12, unit: 'kWh saved', days: 4, points: 110, diff: 'Easy' },
+      { id: 'zero_waste', title: 'Zero Waste Champion', category: 'Waste & Recycling', icon: '♻️', cur: 6.2, tgt: 10, unit: 'kg diverted', days: 5, points: 140, diff: 'Challenging' },
+      { id: 'campus_ambassador', title: 'Campus Green Ambassador', category: 'Eco Lifestyle', icon: '🏫', cur: 4, tgt: 5, unit: 'sectors active', days: 6, points: 175, diff: 'Challenging' }
+    ];
+
+    const BADGES_DATA = [
+      { id: 'beginner', name: 'Green Beginner', tier: 'Bronze', icon: '🌱', desc: 'Logged your first verified eco action', unlocked: true },
+      { id: 'plastic', name: 'Plastic Warrior', tier: 'Silver', icon: '🛡️', desc: 'Diverted 15+ single-use plastic units', unlocked: true },
+      { id: 'water', name: 'Aqua Protector', tier: 'Silver', icon: '💧', desc: 'Conserved over 200 Liters of water', unlocked: true },
+      { id: 'carbon', name: 'Carbon Conscious', tier: 'Gold', icon: '🌿', desc: 'Avoided 25+ kg CO2e emissions', unlocked: true },
+      { id: 'commuter', name: 'Clean Commuter', tier: 'Silver', icon: '🚲', desc: 'Travelled 30+ km green mobility', unlocked: true },
+      { id: 'streak', name: 'Habit Builder', tier: 'Gold', icon: '🔥', desc: 'Maintained 5-day consecutive streak', unlocked: true },
+      { id: 'power', name: 'Energy Guardian', tier: 'Silver', icon: '⚡', desc: 'Saved 20+ kWh of electrical power', unlocked: false, pct: 65 },
+      { id: 'challenger', name: 'Challenge Crusher', tier: 'Gold', icon: '🎯', desc: 'Completed 2 structured sprints', unlocked: false, pct: 50 },
+      { id: 'champion', name: 'Eco Champion', tier: 'Platinum', icon: '🏆', desc: 'Attained an EcoScore of 90 or higher', unlocked: true }
+    ];
+
+    const RECYCLING_DATA = [
+      { item: "Plastic Water Bottles (#1 PETE)", tag: "Widely Recycled", color: "emerald", rule: "Empty, rinse, crush flat, screw cap back on.", alt: "Stainless steel tumbler", time: "450 Years in landfill" },
+      { item: "Milk & Detergent Jugs (#2 HDPE)", tag: "High Value Plastic", color: "emerald", rule: "Rinse completely, replace plastic cap.", alt: "Refillable bulk detergents", time: "100-300 Years" },
+      { item: "Cardboard & Shipping Boxes", tag: "Widely Recycled", color: "emerald", rule: "Flatten completely. Keep 100% dry to protect paper pulp fibers.", alt: "Reuse for moving/gardening mulch", time: "2 Months" },
+      { item: "Greasy Pizza Boxes", tag: "Separated / Conditional", color: "amber", rule: "Tear off clean top lid to recycle. Compost or trash the greasy cheese bottom.", alt: "Pizzerias using grease-barrier paper", time: "Compostable if unlined" },
+      { item: "Plastic Grocery Bags (#4 LDPE)", tag: "Store Drop-off Only", color: "amber", rule: "DO NOT place in curbside blue bins (jams sorting machinery). Return to grocery bin.", alt: "Organic cotton canvas tote", time: "500+ Years" },
+      { item: "Styrofoam / Polystyrene (#6 PS)", tag: "Landfill Only", color: "rose", rule: "Not accepted in 98% of curbside bins. Too brittle and light to re-process.", alt: "Molded pulp cardboard or mushroom packaging", time: "Non-biodegradable" },
+      { item: "Aluminum Beverage Cans", tag: "100% Infinitely Recyclable", color: "emerald", rule: "Rinse remaining liquid. Uses 95% less energy than mining bauxite ore.", alt: "Draft fountains & refill kegs", time: "Returns to shelf in 60 days" },
+      { item: "Batteries (Lithium & Alkaline)", tag: "Hazardous Drop-off", color: "rose", rule: "NEVER toss in curbside trash (severe truck fire risk). Tape terminals & drop at depot.", alt: "Rechargeable NiMH USB batteries", time: "Toxic heavy metals" },
+      { item: "Paper Coffee Cups", tag: "Landfill Only", color: "rose", rule: "Inner polyethylene waterproof wax lining prevents paper mill pulping.", alt: "Ceramic travel mug", time: "30+ Years" }
+    ];
+
+    // Load or Initialize Local Storage
+    let activities = JSON.parse(localStorage.getItem("ecotrack_activities")) || DEFAULT_ACTIVITIES;
+
+    // -------------------------------------------------------------
+    // App State Calculations
+    // -------------------------------------------------------------
+    function computeStats() {
+      const totalActions = activities.length;
+      const totalCO2 = activities.reduce((sum, a) => sum + (parseFloat(a.co2) || 0), 0);
+      const totalWater = activities.reduce((sum, a) => sum + (parseFloat(a.water) || 0), 0);
+      const totalWaste = activities.reduce((sum, a) => sum + (parseFloat(a.waste) || 0), 0);
+      const totalEnergy = activities.reduce((sum, a) => sum + (parseFloat(a.energy) || 0), 0);
+
+      const trees = (totalCO2 / 21.77).toFixed(2);
+      const cars = (totalCO2 / 0.170).toFixed(1);
+      const phones = Math.round(totalEnergy / 0.012);
+      const bottles = Math.round(totalWaste / 0.025);
+
+      return {
+        totalActions,
+        totalCO2: totalCO2.toFixed(1),
+        totalWater: Math.round(totalWater),
+        totalWaste: totalWaste.toFixed(1),
+        totalEnergy: totalEnergy.toFixed(1),
+        trees,
+        cars,
+        phones,
+        bottles,
+        streak: 7,
+        score: Math.min(100, Math.round(75 + (totalActions * 0.7)))
+      };
+    }
+
+    function updateDOMStats() {
+      const s = computeStats();
+      document.getElementById("navEcoScore").innerText = s.score;
+      document.getElementById("scoreCenter").innerText = s.score;
+      document.getElementById("kpiActivities").innerText = s.totalActions;
+      document.getElementById("kpiCO2").innerText = s.totalCO2;
+      document.getElementById("kpiWater").innerText = s.totalWater.toLocaleString();
+      document.getElementById("kpiWaste").innerText = s.totalWaste;
+
+      document.getElementById("eqTrees").innerText = s.trees;
+      document.getElementById("eqCars").innerText = s.cars + " km";
+      document.getElementById("eqEnergy").innerText = s.phones.toLocaleString();
+      document.getElementById("eqBottles").innerText = s.bottles.toLocaleString();
+    }
+
+    // -------------------------------------------------------------
+    // Charts Controller
+    // -------------------------------------------------------------
+    let overviewChartInstance, donutChartInstance, cumulativeChartInstance, radarChartInstance;
+
+    function initCharts() {
+      const ctxOverview = document.getElementById("overviewChart").getContext("2d");
+      overviewChartInstance = new Chart(ctxOverview, {
+        type: 'bar',
+        data: {
+          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          datasets: [{
+            label: 'CO2 Avoided (kg)',
+            data: [4.2, 5.8, 3.9, 6.4, 7.1, 5.2, 5.8],
+            backgroundColor: '#10B981',
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { grid: { color: '#F1F5F9' }, ticks: { font: { family: 'Plus Jakarta Sans', size: 10 } } },
+            x: { grid: { display: false }, ticks: { font: { family: 'Plus Jakarta Sans', size: 10 } } }
+          }
+        }
+      });
+
+      const ctxDonut = document.getElementById("overviewDonut").getContext("2d");
+      donutChartInstance = new Chart(ctxDonut, {
+        type: 'doughnut',
+        data: {
+          labels: ['Transport', 'Waste', 'Water', 'Energy', 'Food'],
+          datasets: [{
+            data: [35, 25, 18, 12, 10],
+            backgroundColor: ['#10B981', '#059669', '#0284C7', '#F59E0B', '#8B5CF6'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '70%',
+          plugins: {
+            legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10, family: 'Plus Jakarta Sans' } } }
+          }
+        }
+      });
+    }
+
+    function initAnalyticsCharts() {
+      if (cumulativeChartInstance) return;
+
+      const ctxCum = document.getElementById("cumulativeChart").getContext("2d");
+      cumulativeChartInstance = new Chart(ctxCum, {
+        type: 'line',
+        data: {
+          labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Current'],
+          datasets: [{
+            label: 'Cumulative CO2 (kg)',
+            data: [8.5, 17.2, 26.8, 33.1, 38.4],
+            borderColor: '#10B981',
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            fill: true,
+            tension: 0.35,
+            borderWidth: 3,
+            pointBackgroundColor: '#065F46'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { grid: { color: '#F1F5F9' } },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+
+      const ctxRadar = document.getElementById("radarChart").getContext("2d");
+      radarChartInstance = new Chart(ctxRadar, {
+        type: 'radar',
+        data: {
+          labels: ['Consistency', 'Carbon Impact', 'Water Saving', 'Habit Diversity', 'Challenges'],
+          datasets: [{
+            label: 'Mastery Profile',
+            data: [93, 97, 85, 90, 88],
+            backgroundColor: 'rgba(16, 185, 129, 0.25)',
+            borderColor: '#10B981',
+            borderWidth: 2,
+            pointBackgroundColor: '#059669'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            r: { angleLines: { color: '#E2E8F0' }, grid: { color: '#E2E8F0' }, ticks: { display: false } }
+          },
+          plugins: { legend: { display: false } }
+        }
+      });
+    }
+
+    // -------------------------------------------------------------
+    // Render Functions
+    // -------------------------------------------------------------
+    function renderRecentFeed() {
+      const list = document.getElementById("recentActivityList");
+      const recents = activities.slice(0, 5);
+      list.innerHTML = recents.map(a => `
+        <div class="py-3 flex items-center justify-between text-xs">
+          <div class="flex items-center space-x-3">
+            <span class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-base">${a.icon}</span>
+            <div>
+              <div class="font-bold text-slate-800">${a.name}</div>
+              <div class="text-[11px] text-slate-400">${a.date} • ${a.qty} ${a.unit}</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="font-bold text-emerald-600 font-mono">-${parseFloat(a.co2).toFixed(2)} kg CO2</span>
+            ${a.water > 0 ? `<div class="text-[10px] text-sky-600">${a.water} L water</div>` : ''}
+          </div>
+        </div>
+      `).join("");
+    }
+
+    let currentFilterCat = 'All';
+
+    function setCategoryFilter(cat) {
+      currentFilterCat = cat;
+      document.querySelectorAll('.cat-pill').forEach(btn => {
+        btn.classList.remove('active', 'bg-emerald-600', 'text-white');
+        btn.classList.add('bg-slate-100', 'text-slate-600');
+      });
+      event.target.classList.add('active', 'bg-emerald-600', 'text-white');
+      event.target.classList.remove('bg-slate-100', 'text-slate-600');
+      filterLedger();
+    }
+
+    function filterLedger() {
+      const q = document.getElementById("ledgerSearchInput").value.toLowerCase();
+      const tbody = document.getElementById("ledgerTableBody");
+
+      const filtered = activities.filter(a => {
+        const matchesCat = currentFilterCat === 'All' || a.category === currentFilterCat;
+        const matchesQuery = a.name.toLowerCase().includes(q) || (a.notes && a.notes.toLowerCase().includes(q));
+        return matchesCat && matchesQuery;
+      });
+
+      tbody.innerHTML = filtered.map(a => `
+        <tr class="hover:bg-slate-50/80 transition-colors">
+          <td class="py-3 px-4 font-mono text-slate-500 whitespace-nowrap">${a.date}</td>
+          <td class="py-3 px-4">
+            <div class="font-bold text-slate-900 flex items-center gap-1.5">
+              <span>${a.icon}</span> <span>${a.name}</span>
+            </div>
+            <div class="text-[10px] text-slate-400">${a.category} ${a.notes ? '• ' + a.notes : ''}</div>
+          </td>
+          <td class="py-3 px-4 font-mono font-semibold text-slate-700">${a.qty} ${a.unit}</td>
+          <td class="py-3 px-4 text-right font-mono font-bold text-emerald-600">-${parseFloat(a.co2).toFixed(2)} kg</td>
+          <td class="py-3 px-4 text-right font-mono text-sky-600">${a.water ? a.water + ' L' : '—'}</td>
+          <td class="py-3 px-4 text-right font-mono text-amber-600">${a.energy ? a.energy + ' kWh' : '—'}</td>
+          <td class="py-3 px-4 text-center">
+            <button onclick="deleteActivity(${a.id})" class="text-slate-400 hover:text-rose-600 font-bold px-2 py-1 rounded hover:bg-rose-50 transition-colors" title="Delete record">🗑️</button>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    function renderChallenges() {
+      const grid = document.getElementById("challengesGrid");
+      grid.innerHTML = CHALLENGES_DATA.map(c => {
+        const pct = Math.min(100, Math.round((c.cur / c.tgt) * 100));
+        return `
+          <div class="glass-card rounded-xl p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex justify-between items-start mb-2">
+                <span class="text-2xl p-2 rounded-lg bg-emerald-50">${c.icon}</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold ${c.completed ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'}">
+                  ${c.completed ? 'Completed ✨' : c.diff}
+                </span>
+              </div>
+              <h3 class="font-extrabold text-sm text-slate-900">${c.title}</h3>
+              <p class="text-xs text-slate-500 mt-0.5 mb-4">${c.category}</p>
+
+              <div class="space-y-1 mb-4">
+                <div class="flex justify-between text-xs font-bold text-slate-800 font-mono">
+                  <span>${c.cur} / ${c.tgt} ${c.unit}</span>
+                  <span class="text-emerald-600">${pct}%</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2">
+                  <div class="bg-emerald-500 h-2 rounded-full" style="width: ${pct}%"></div>
+                </div>
+              </div>
+            </div>
+
+            <button onclick="logChallengeMilestone('${c.id}')" class="w-full py-2 rounded-lg ${c.completed ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm'} text-xs font-bold transition-all">
+              ${c.completed ? 'Sprint Finished (+'+c.points+' pts)' : '+ Add Milestone Progress'}
+            </button>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderBadges() {
+      const grid = document.getElementById("badgesGrid");
+      grid.innerHTML = BADGES_DATA.map(b => `
+        <div class="glass-card rounded-xl p-4 text-center ${b.unlocked ? 'border-emerald-200 bg-gradient-to-b from-white to-emerald-50/30' : 'opacity-60 grayscale'}">
+          <div class="text-3xl mb-2">${b.icon}</div>
+          <span class="text-[9px] uppercase font-bold tracking-wider text-emerald-700 block">${b.tier}</span>
+          <h4 class="font-extrabold text-xs text-slate-900 mt-0.5">${b.name}</h4>
+          <p class="text-[10px] text-slate-500 mt-1">${b.desc}</p>
+          <div class="mt-3 text-[10px] font-bold ${b.unlocked ? 'text-emerald-700' : 'text-slate-400'}">
+            ${b.unlocked ? 'Unlocked ✨' : (b.pct || 40) + '% to unlock'}
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderRecycling(filter = '') {
+      const grid = document.getElementById("recyclingCardGrid");
+      const filtered = RECYCLING_DATA.filter(r => r.item.toLowerCase().includes(filter.toLowerCase()) || r.rule.toLowerCase().includes(filter.toLowerCase()));
+      grid.innerHTML = filtered.map(r => `
+        <div class="glass-card rounded-xl p-4 flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-start mb-2">
+              <h4 class="font-extrabold text-xs text-slate-900">${r.item}</h4>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-${r.color}-100 text-${r.color}-800 border border-${r.color}-200">
+                ${r.tag}
+              </span>
+            </div>
+            <p class="text-xs text-slate-700 mb-2"><b>Sorting Rule:</b> ${r.rule}</p>
+            <p class="text-[11px] text-slate-500 mb-3">⏳ ${r.time}</p>
+          </div>
+          <div class="pt-2 border-t border-slate-100 text-xs text-emerald-700 font-semibold">
+            🌱 <b>Alternative:</b> ${r.alt}
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function filterRecycling() {
+      const q = document.getElementById("recycleSearch").value;
+      renderRecycling(q);
+    }
+
+    // -------------------------------------------------------------
+    // What-If Simulator Logic
+    // -------------------------------------------------------------
+    function recalcSimulator() {
+      const km = parseFloat(document.getElementById("simKm").value);
+      const shower = parseFloat(document.getElementById("simShower").value);
+      const meal = parseFloat(document.getElementById("simMeal").value);
+      const bottle = parseFloat(document.getElementById("simBottle").value);
+
+      document.getElementById("simKmVal").innerText = km + " km / week";
+      document.getElementById("simShowerVal").innerText = shower + " min / day";
+      document.getElementById("simMealVal").innerText = meal + " meals / week";
+      document.getElementById("simBottleVal").innerText = bottle + " items / week";
+
+      const co2Weekly = (km * 0.170) + (shower * 7 * 0.030) + (meal * 1.800) + (bottle * 0.082);
+      const waterWeekly = (shower * 7 * 9.0) + (meal * 1200) + (bottle * 3.0);
+      const wasteWeekly = (bottle * 0.025);
+      const powerWeekly = (shower * 7 * 0.07) + (meal * 0.80);
+
+      document.getElementById("simAnnualCO2").innerText = Math.round(co2Weekly * 52) + " kg";
+      document.getElementById("simAnnualWater").innerText = Math.round(waterWeekly * 52).toLocaleString() + " L";
+      document.getElementById("simAnnualWaste").innerText = (wasteWeekly * 52).toFixed(1) + " kg";
+      document.getElementById("simAnnualPower").innerText = Math.round(powerWeekly * 52) + " kWh";
+    }
+
+    // -------------------------------------------------------------
+    // Modal & Logging Handlers
+    // -------------------------------------------------------------
+    function openModal() {
+      document.getElementById("modalDate").valueAsDate = new Date();
+      document.getElementById("logModal").classList.remove("hidden");
+      updateModalPreview();
+    }
+
+    function closeModal() {
+      document.getElementById("logModal").classList.add("hidden");
+    }
+
+    function updateModalPreview() {
+      const sel = document.getElementById("modalActivitySelect");
+      const opt = sel.selectedOptions[0];
+      const qty = parseFloat(document.getElementById("modalQty").value) || 1;
+      const unit = opt.dataset.unit;
+      document.getElementById("modalUnitLabel").innerText = unit;
+
+      const co2 = (parseFloat(opt.dataset.co2) * qty).toFixed(2);
+      const water = Math.round(parseFloat(opt.dataset.water) * qty);
+      const power = (parseFloat(opt.dataset.energy) * qty).toFixed(1);
+
+      document.getElementById("previewCO2").innerText = co2;
+      document.getElementById("previewWater").innerText = water;
+      document.getElementById("previewPower").innerText = power;
+    }
+
+    function handleLogActivity(e) {
+      e.preventDefault();
+      const sel = document.getElementById("modalActivitySelect");
+      const opt = sel.selectedOptions[0];
+      const qty = parseFloat(document.getElementById("modalQty").value) || 1;
+      const date = document.getElementById("modalDate").value;
+      const notes = document.getElementById("modalNotes").value;
+
+      const co2 = parseFloat((parseFloat(opt.dataset.co2) * qty).toFixed(2));
+      const water = Math.round(parseFloat(opt.dataset.water) * qty);
+      const waste = parseFloat((parseFloat(opt.dataset.waste) * qty).toFixed(3));
+      const energy = parseFloat((parseFloat(opt.dataset.energy) * qty).toFixed(2));
+
+      const icon = opt.text.split(" ")[0];
+      const cleanName = opt.text.substring(icon.length + 1).split("(")[0].trim();
+
+      const newRecord = {
+        id: Date.now(),
+        date,
+        name: cleanName,
+        category: opt.dataset.cat,
+        icon,
+        qty,
+        unit: opt.dataset.unit,
+        co2,
+        water,
+        waste,
+        energy,
+        notes
+      };
+
+      activities.unshift(newRecord);
+      localStorage.setItem("ecotrack_activities", JSON.stringify(activities));
+
+      closeModal();
+      updateDOMStats();
+      renderRecentFeed();
+      filterLedger();
+      showToast(`🌱 Logged "${cleanName}"! Saved ${co2} kg CO2e.`);
+    }
+
+    function deleteActivity(id) {
+      if (confirm("Are you sure you want to remove this record from your ledger?")) {
+        activities = activities.filter(a => a.id !== id);
+        localStorage.setItem("ecotrack_activities", JSON.stringify(activities));
+        updateDOMStats();
+        renderRecentFeed();
+        filterLedger();
+        showToast("🗑️ Activity record removed.");
+      }
+    }
+
+    function logChallengeMilestone(id) {
+      const c = CHALLENGES_DATA.find(x => x.id === id);
+      if (c && !c.completed) {
+        c.cur = Math.min(c.tgt, c.cur + 1);
+        if (c.cur >= c.tgt) {
+          c.completed = true;
+          showToast(`🎉 Challenge Completed: "${c.title}"! +${c.points} pts added to your EcoScore!`);
+        } else {
+          showToast(`📈 Milestone logged for ${c.title}! (${c.cur}/${c.tgt})`);
+        }
+        renderChallenges();
+      }
+    }
+
+    function resetData() {
+      if (confirm("Reset demo activities back to the curated 28-day sample history?")) {
+        localStorage.removeItem("ecotrack_activities");
+        activities = [...DEFAULT_ACTIVITIES];
+        localStorage.setItem("ecotrack_activities", JSON.stringify(activities));
+        updateDOMStats();
+        renderRecentFeed();
+        filterLedger();
+        showToast("🔄 Demo data refreshed successfully!");
+      }
+    }
+
+    function exportCSV() {
+      const headers = ["ID", "Date", "Activity Name", "Category", "Quantity", "Unit", "CO2_Avoided_kg", "Water_Saved_L", "Energy_Saved_kWh", "Notes"];
+      const rows = activities.map(a => [
+        a.id,
+        a.date,
+        `"${a.name.replace(/"/g, '""')}"`,
+        a.category,
+        a.qty,
+        a.unit,
+        a.co2,
+        a.water,
+        a.energy,
+        `"${(a.notes || '').replace(/"/g, '""')}"`
+      ]);
+
+      const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `ecotrack_ledger_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast("📥 Exported activity ledger as CSV!");
+    }
+
+    function showToast(msg) {
+      const container = document.getElementById("toastContainer");
+      const toast = document.createElement("div");
+      toast.className = "bg-slate-900 text-white text-xs font-semibold px-4 py-2.5 rounded-lg shadow-xl flex items-center space-x-2 pointer-events-auto border border-slate-700 animate-bounce";
+      toast.innerHTML = `<span>${msg}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.remove();
+      }, 3500);
+    }
+
+    // -------------------------------------------------------------
+    // Tab Navigation Controller
+    // -------------------------------------------------------------
+    function switchTab(tabId) {
+      document.querySelectorAll(".tab-pane").forEach(p => p.classList.add("hidden"));
+      document.querySelectorAll(".nav-tab").forEach(t => {
+        t.classList.remove("text-emerald-800", "bg-emerald-50/80");
+        t.classList.add("text-slate-600");
+      });
+
+      const activePane = document.getElementById(`tab-${tabId}`);
+      if (activePane) activePane.classList.remove("hidden");
+
+      const activeBtn = document.getElementById(`tab-btn-${tabId}`);
+      if (activeBtn) {
+        activeBtn.classList.add("text-emerald-800", "bg-emerald-50/80");
+        activeBtn.classList.remove("text-slate-600");
+      }
+
+      if (tabId === 'analytics') {
+        setTimeout(initAnalyticsCharts, 100);
+      }
+    }
+
+    // -------------------------------------------------------------
+    // Application Initialization
+    // -------------------------------------------------------------
+    document.addEventListener("DOMContentLoaded", function() {
+      updateDOMStats();
+      initCharts();
+      renderRecentFeed();
+      filterLedger();
+      renderChallenges();
+      renderBadges();
+      renderRecycling();
+      recalcSimulator();
+    });
+  </script>
+</body>
+</html>
